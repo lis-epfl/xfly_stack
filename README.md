@@ -17,9 +17,6 @@ xfly_stack/
 └── docs/            Media
 ```
 
-Both directories are ROS 2 `ament_cmake` packages contained in this
-single repository; they are not submodules.
-
 ## Requirements
 
 | Component | Requirement |
