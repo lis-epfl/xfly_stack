@@ -148,7 +148,7 @@ If you use this software in your research, please cite:
 
 ## License
 
-Released under the MIT License. See the `package.xml` of each package.
+Released under the MIT License.
 
 ## Acknowledgements
 
