@@ -8,19 +8,6 @@ trajectories used in the accompanying publication.
 
 [![XFly tracking the two racing trajectories](docs/tracking_demo.gif)](https://youtu.be/pVb3DoUntWI)
 
-The ornithopter tracking both racing trajectories in real time. White
-and cyan curves denote the reference trajectory; red frames denote the
-gates. Track 1 consists of two overlapping loops, Track 2 of a
-three-lobe clover. Both are three-gate closed circuits with altitude
-varying between 0.3 m and 1.25 m, flown over three laps.
-[Click the animation](https://youtu.be/pVb3DoUntWI) for the full video.
-
-MPCC tracks an arc-length-parameterized reference while optimizing
-progress online, which removes the need for a predefined speed profile.
-On the XFly platform the method achieves a mean deviation from the
-reference between 6.5 cm and 9 cm at airspeeds up to 3 m/s, an 8.5×
-improvement over the previous state of the art on the same airframe.
-
 ## Repository structure
 
 ```
@@ -39,7 +26,7 @@ single repository; they are not submodules.
 |---|---|
 | ROS 2 | Humble (`rclpy`, `std_msgs`, `geometry_msgs`, `nav_msgs`) |
 | Motion capture | OptiTrack, publishing the aircraft rigid body |
-| Message definitions | `optitrack_multiplexer_ros2_msgs` (provides `RigidBodyStamped`) |
+| Message definitions | [`optitrack_multiplexer_ros2_msgs`](https://github.com/lis-epfl/optitrack_packages_ros2) (provides `RigidBodyStamped`) |
 | Python | `numpy`, `casadi`; `scipy` for the generator, `matplotlib` for plots |
 | Bluetooth | `python3-bleak` |
 
@@ -86,7 +73,7 @@ complete documentation.
 
 ### 2. Motion capture
 
-Start the OptiTrack multiplexer so that the aircraft rigid body is
+Start the [OptiTrack multiplexer](https://github.com/lis-epfl/optitrack_packages_ros2) so that the aircraft rigid body is
 published. The controller subscribes by default to:
 
 ```
@@ -94,8 +81,8 @@ published. The controller subscribes by default to:
 ```
 
 Set the `optitrack_topic` parameter if the rigid body is named
-differently. The controller does not arm without a valid pose stream
-and disarms after 0.5 s without one (`tracking_timeout`).
+differently. The controller requires a valid pose stream and stops
+commanding the aircraft after 0.5 s without one (`tracking_timeout`).
 
 ### 3. Communication bridge
 
@@ -145,15 +132,6 @@ ros2 run xfly_control mpcc_node.py --real --solver knitro \
 The trajectory file is resolved relative to the working directory
 rather than to the installed node; supply an absolute path when using
 `ros2 run`.
-
-> **The controller arms itself on startup.** The `auto_arm` parameter
-> defaults to `true`, so the aircraft begins flying as soon as a valid
-> pose is received. Launch with `-p auto_arm:=false` to require
-> explicit arming, which is then issued on `/mpcc_node/arm`:
->
-> ```bash
-> ros2 topic pub --once /mpcc_node/arm std_msgs/msg/Bool "{data: true}"
-> ```
 
 ## Citation
 

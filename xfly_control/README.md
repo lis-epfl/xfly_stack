@@ -50,15 +50,6 @@ The trajectory file is resolved relative to the working directory
 rather than to the installed node; supply an absolute path when using
 `ros2 run`.
 
-The controller arms itself on startup, since `auto_arm` defaults to
-`true`; the aircraft begins flying as soon as a valid pose is received.
-Launch with `-p auto_arm:=false` to require explicit arming, which is
-then issued on `/mpcc_node/arm`:
-
-```bash
-ros2 topic pub --once /mpcc_node/arm std_msgs/msg/Bool "{data: true}"
-```
-
 ### Command-line arguments
 
 | Argument | Default | Description |
@@ -85,8 +76,7 @@ Declared on the node and configurable through `-p` or a launch file:
 | `enable_topic` | `/xfly_bridge/enable` |
 | `control_rate` | 100.0 Hz |
 | `mpc_horizon` / `mpc_dt` | 15 steps / 0.1 s |
-| `tracking_timeout` | 0.5 s; the controller disarms if motion capture is lost |
-| `auto_arm` | `true`; the controller arms itself at startup |
+| `tracking_timeout` | 0.5 s; the controller stops commanding if motion capture is lost |
 | `startup_hold_time` | 0.5 s |
 
 ## Generating a trajectory
