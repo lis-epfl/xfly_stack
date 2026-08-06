@@ -78,6 +78,9 @@ published. The controller subscribes by default to:
 /optitrack_multiplexer_node/rigid_body/XFly2
 ```
 
+Set the `optitrack_topic` parameter if the rigid body is named
+differently.
+
 ### 3. Communication bridge
 
 ```bash
