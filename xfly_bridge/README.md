@@ -47,10 +47,17 @@ consistent with one another. Commands are clamped on receipt.
 | `ble_address` | — | MAC address of the aircraft |
 | `send_rate` | 100.0 | Command transmission rate in Hz |
 | `continuous_send` | `true` | Retransmit the last command continuously |
-| `straight_assist` | `false` | Enable straight-flight assistance |
-| `straight_strength` | 0 | Straight-flight assistance gain |
-| `steer_assist` | `false` | Enable steering assistance |
-| `steer_strength` | 0 | Steering assistance gain |
+
+## Flight assistance
+
+The onboard straight-flight and steering assistance cannot be
+configured over this bridge. It is set from the XFly mobile
+application, and the settings do not persist: they must be re-applied
+each time the aircraft is powered off and on.
+
+The configuration used for the results reported in the publication is
+steering assistance set to *medium* and straight-flight assistance set
+to 50%.
 
 ## Obtaining the aircraft MAC address
 
