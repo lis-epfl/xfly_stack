@@ -65,8 +65,9 @@ python3 generate_track.py --track oval --output my_track.csv --plot
 ```
 
 The generator is standalone: it requires neither ROS 2 nor the
-aircraft. Refer to `xfly_control/README_generate_track.md` for the
-complete documentation.
+aircraft. It refines the method described in Appendix B of the
+publication; `xfly_control/README_generate_track.md` documents the
+differences and the complete formulation.
 
 ### 2. Motion capture
 

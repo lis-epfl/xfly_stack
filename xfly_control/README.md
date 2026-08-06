@@ -94,8 +94,16 @@ turn radius ≥ 1.8 m, climb angle ≤ 20°, 80 × 60 cm gates, and a
 generated trajectory satisfies every constraint, and can therefore be
 used as a verification step.
 
-`README_generate_track.md` documents the formulation, the seven preset
-circuits, the gate design rules, and the verification results.
+The generator is a refinement of the method described in Appendix B of
+the publication: C¹ continuity and gate traversal are enforced
+structurally rather than through penalty terms, C² continuity is
+measured on the curvature vector, the height profile of each leg is
+constrained, and the exported trajectory is verified against the
+platform limits.
+
+`README_generate_track.md` documents the formulation, the differences
+from the published method, the seven preset circuits, the gate design
+rules, and the verification results.
 
 ## Racing trajectories
 

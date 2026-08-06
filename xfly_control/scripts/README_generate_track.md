@@ -9,6 +9,43 @@ Supersedes the two earlier scripts it was merged from:
 for the behaviour differences — several are corrections, not just
 additions.
 
+## Relation to the publication
+
+This generator is a refinement of the method described in Appendix B of
+the accompanying publication. The formulation is the same in outline —
+one quintic Bézier per gate-to-gate leg, minimizing the curvature
+integral subject to turn-radius, climb-angle and flight-volume limits —
+but differs in five respects:
+
+1. **C¹ continuity and gate traversal are structural rather than
+   penalized.** Appendix B leaves all four interior control points of
+   every leg free (12*n* unknowns) and enforces both properties through
+   penalty terms. Here each gate carries a single tangent vector shared
+   by the legs on either side, so the trajectory is C¹ by construction
+   and always crosses a gate along its normal. The decision vector
+   reduces to 8*n*.
+2. **C² continuity is measured on the curvature vector** d**T**/d*s*
+   rather than on **C**″. The latter depends on the parameterization
+   and grows with the tangent length, which penalizes long legs for
+   their parameterization rather than their geometry.
+3. **The climb limit is applied as** |d*z*/d*s*| ≤ sin γ_max. The
+   quantity |ż|/‖**C**′‖ is the sine of the climb angle, so the
+   comparison against tan γ_max in Appendix B admits 21.35° at a 20°
+   setting.
+4. **The height profile of each leg is constrained.** Nothing in the
+   published cost function acts on the shape of *z* between gates, and
+   the curvature integral is nearly indifferent to it over a long leg.
+   Two terms confine *z* to the band spanned by the leg's gate heights
+   and charge for vertical travel beyond the net height change, so each
+   leg climbs or descends once.
+5. **The exported trajectory is verified.** Curvature and climb are
+   recomputed from the sampled geometry after resampling and any height
+   rescaling, and the tool exits non-zero if a constraint is violated.
+
+Trajectories produced by either version are consumed identically by
+`external_trajectory.py`; `track_1.csv` and `track_2.csv` are the
+originals used in the publication and are unchanged.
+
 ## Quick start
 
 ```bash
