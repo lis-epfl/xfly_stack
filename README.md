@@ -1,49 +1,56 @@
-# xfly_stack
+# XFly Stack
 
-Everything needed to fly the XFly ornithopter under MPCC trajectory
-tracking, in one place: the BLE link to the aircraft, the controller,
-the offline track generator, and the two racing tracks from the
-Flapping-MPCC paper.
+ROS 2 software stack for Model Predictive Contouring Control (MPCC) of
+the XFly bird-scale flapping-wing micro aerial vehicle. The stack
+provides the communication link to the aircraft, the real-time
+controller, an offline trajectory generator, and the two racing
+trajectories used in the accompanying publication.
+
+[![XFly tracking the two racing trajectories](docs/tracking_demo.gif)](https://youtu.be/pVb3DoUntWI)
+
+The ornithopter tracking both racing trajectories in real time. White
+and cyan curves denote the reference trajectory; red frames denote the
+gates. Track 1 consists of two overlapping loops, Track 2 of a
+three-lobe clover. Both are three-gate closed circuits with altitude
+varying between 0.3 m and 1.25 m, flown over three laps.
+[Click the animation](https://youtu.be/pVb3DoUntWI) for the full video.
+
+MPCC tracks an arc-length-parameterized reference while optimizing
+progress online, which removes the need for a predefined speed profile.
+On the XFly platform the method achieves a mean deviation from the
+reference between 6.5 cm and 9 cm at airspeeds up to 3 m/s, an 8.5×
+improvement over the previous state of the art on the same airframe.
+
+## Repository structure
 
 ```
 xfly_stack/
-├── xfly_bridge/     BLE link to the aircraft + manual teleop
-└── xfly_control/    MPCC controller + offline track generation
+├── xfly_bridge/     Bluetooth Low Energy link to the aircraft, manual teleoperation
+├── xfly_control/    MPCC controller, trajectory generator, racing trajectories
+└── docs/            Media
 ```
 
-`xfly_stack` is a single self-contained git repository. The two
-directories are plain subdirectories of it, not submodules and not
-separate repos.
+Both directories are ROS 2 `ament_cmake` packages contained in this
+single repository; they are not submodules.
 
-![XFly tracking the two racing tracks](docs/tracking_demo.gif)
+## Requirements
 
-The ornithopter flying the two paper tracks under MPCC, in real time.
-The white and cyan curves are the reference trajectory; the red squares
-are the gates. Track 1 is a pair of overlapping loops, Track 2 a
-three-lobe clover — both three-gate closed loops with the altitude
-varying between 0.3 m and 1.25 m.
-
----
-
-## 1. Prerequisites
-
-| Need | Notes |
+| Component | Requirement |
 |---|---|
-| ROS 2 (Humble) | `rclpy`, `std_msgs`, `geometry_msgs`, `nav_msgs` |
-| `optitrack_multiplexer_ros2_msgs` | provides `RigidBodyStamped`; must be on the workspace path |
-| Python | `numpy`, `casadi`, `scipy` (generator), `matplotlib` (plots) |
-| `python3-bleak` | BLE client used by the bridge |
-| A motion-capture stream | OptiTrack, publishing the rigid body for the aircraft |
+| ROS 2 | Humble (`rclpy`, `std_msgs`, `geometry_msgs`, `nav_msgs`) |
+| Motion capture | OptiTrack, publishing the aircraft rigid body |
+| Message definitions | `optitrack_multiplexer_ros2_msgs` (provides `RigidBodyStamped`) |
+| Python | `numpy`, `casadi`; `scipy` for the generator, `matplotlib` for plots |
+| Bluetooth | `python3-bleak` |
 
-An NLP solver is needed by the controller. IPOPT ships with CasADi and
-is the default; KNITRO is faster and is what the paper used for the
-timing numbers (mean 6.7 ms, P95 8.2 ms).
+The controller requires a nonlinear programming solver. IPOPT is
+distributed with CasADi and is the default. KNITRO is faster and was
+used for the timing results reported in the publication (mean 6.7 ms,
+95th percentile 8.2 ms, against a 10 ms control period).
 
-## 2. Build
+## Installation
 
-These are ROS 2 `ament_cmake` packages. Put them on a workspace's
-`src/` path — either by making `xfly_stack` itself the `src` directory,
-or by symlinking:
+Place both packages on the `src` path of a colcon workspace and build:
 
 ```bash
 mkdir -p ~/xfly_ws/src
@@ -54,70 +61,71 @@ colcon build --symlink-install
 source install/setup.bash
 ```
 
-`--symlink-install` is worth it here: both packages are pure Python, so
-edits to the scripts take effect without rebuilding.
+Both packages are pure Python, so `--symlink-install` allows script
+changes to take effect without rebuilding.
 
----
+## Usage
 
-## 3. Order of operations
+The components must be started in the following order. Each step
+assumes the preceding ones are running.
 
-Bring things up in this order. Each step assumes the previous one is
-running.
+### 1. Trajectory generation (optional)
 
-### Step 0 — (optional) generate a track
-
-Only needed for a **new** track. The two tracks from the paper are
-already in `xfly_control/scripts/` as `track_1.csv` and `track_2.csv`.
+Required only for a new circuit. The two trajectories from the
+publication are provided as `xfly_control/scripts/track_1.csv` and
+`track_2.csv`.
 
 ```bash
 cd ~/xfly_stack/xfly_control/scripts
 python3 generate_track.py --track oval --output my_track.csv --plot
 ```
 
-Full documentation: `xfly_control/README_generate_track.md`. The
-generator is standalone — it needs no ROS and does not talk to the
-aircraft.
+The generator is standalone: it requires neither ROS 2 nor the
+aircraft. Refer to `xfly_control/README_generate_track.md` for the
+complete documentation.
 
-### Step 1 — motion capture
+### 2. Motion capture
 
-Start your OptiTrack multiplexer so the aircraft's rigid body is being
-published. The controller expects, by default:
+Start the OptiTrack multiplexer so that the aircraft rigid body is
+published. The controller subscribes by default to:
 
 ```
 /optitrack_multiplexer_node/rigid_body/XFly2
 ```
 
-Override with the `optitrack_topic` parameter if your rigid body is
-named differently. **The controller will not arm without tracking** —
-it times out after 0.5 s of no pose (`tracking_timeout`).
+Set the `optitrack_topic` parameter if the rigid body is named
+differently. The controller does not arm without a valid pose stream
+and disarms after 0.5 s without one (`tracking_timeout`).
 
-### Step 2 — the BLE bridge
+### 3. Communication bridge
 
 ```bash
 ros2 launch xfly_bridge xfly_bridge.launch.py
 ```
 
-The bridge connects over Bluetooth LE and relays commands to the
-aircraft. Before the first run you need the aircraft's MAC address —
-see `xfly_bridge/README.md` for how to find it with `bluetoothctl`, then
-set it via the `ble_address` parameter.
+The bridge establishes the Bluetooth Low Energy link and relays control
+commands to the aircraft. The aircraft MAC address must be supplied
+through the `ble_address` parameter; `xfly_bridge/README.md` describes
+how to obtain it.
 
-Confirm the link is up before continuing:
+Verify the link before proceeding:
 
 ```bash
-ros2 topic echo /xfly_bridge/connected      # expect: data: true
+ros2 topic echo /xfly_bridge/connected      # expected: data: true
 ros2 topic echo /xfly_bridge/battery_level
 ```
 
-To check the airframe responds at all, fly it by hand first:
+Manual teleoperation is available to confirm that the airframe responds
+to commands:
 
 ```bash
 ros2 launch xfly_bridge xfly_teleop.launch.py
 ```
 
-### Step 3 — the controller
+### 4. Controller
 
-Simulation first — no aircraft, no mocap, no bridge needed:
+Validation in simulation requires neither the aircraft, motion capture,
+nor the bridge:
 
 ```bash
 cd ~/xfly_stack/xfly_control/scripts
@@ -125,7 +133,7 @@ python3 mpcc_node.py --sim --trajectory external \
     --trajectory-csv track_1.csv --n-loops 3 --duration 60
 ```
 
-Then on the real aircraft:
+Deployment on the aircraft:
 
 ```bash
 ros2 run xfly_control mpcc_node.py --real --solver knitro \
@@ -134,12 +142,40 @@ ros2 run xfly_control mpcc_node.py --real --solver knitro \
     --n-loops 3
 ```
 
-The track path is opened **relative to the directory you launch from**,
-not to the installed node — so give an absolute path with `ros2 run`, or
-`cd` into `scripts/` first and use the bare filename.
+The trajectory file is resolved relative to the working directory
+rather than to the installed node; supply an absolute path when using
+`ros2 run`.
 
-Arm when you are ready for it to fly:
+> **The controller arms itself on startup.** The `auto_arm` parameter
+> defaults to `true`, so the aircraft begins flying as soon as a valid
+> pose is received. Launch with `-p auto_arm:=false` to require
+> explicit arming, which is then issued on `/mpcc_node/arm`:
+>
+> ```bash
+> ros2 topic pub --once /mpcc_node/arm std_msgs/msg/Bool "{data: true}"
+> ```
 
-```bash
-ros2 topic pub --once /mpcc_node/arm std_msgs/msg/Bool "{data: true}"
+## Citation
+
+If you use this software in your research, please cite:
+
+```bibtex
+@article{toumieh2026mpcc,
+  title   = {Accurate Trajectory Tracking with Model Predictive
+             Contouring Control for Bird-Scale Flapping-Wing MAVs},
+  author  = {Toumieh, Charbel and Zeng, Jack and Mistry, Niel and
+             Floreano, Dario},
+  journal = {TODO},
+  year    = {TODO},
+  doi     = {TODO}
+}
 ```
+
+## License
+
+Released under the MIT License. See the `package.xml` of each package.
+
+## Acknowledgements
+
+Developed at the Laboratory of Intelligent Systems (LIS), École
+Polytechnique Fédérale de Lausanne (EPFL).

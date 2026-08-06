@@ -3,8 +3,8 @@
 <package format="3">
   <name>xfly_control</name>
   <version>0.1.0</version>
-  <description>MPCC trajectory tracking controller for XFly drone</description>
-  <maintainer email="toumieh@epfl.ch">toumieh</maintainer>
+  <description>Model predictive contouring control and offline trajectory generation for the XFly ornithopter</description>
+  <maintainer email="toumieh@epfl.ch">Charbel Toumieh</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

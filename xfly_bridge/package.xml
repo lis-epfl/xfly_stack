@@ -2,14 +2,15 @@
 <package format="3">
   <name>xfly_bridge</name>
   <version>0.1.0</version>
-  <description>BLE bridge for X-Fly drone</description>
-  <maintainer email="you@todo.com">you</maintainer>
+  <description>Bluetooth Low Energy communication bridge and teleoperation for the XFly ornithopter</description>
+  <maintainer email="toumieh@epfl.ch">Charbel Toumieh</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
   <exec_depend>python3-bleak</exec_depend>
 
   <export>
