@@ -1,0 +1,1 @@
+For getting the mac address `ble_address` in `xfly_bridge.py` go to a terminal and type `bluetoothctl` then `scan on` then look for XFly. If it is not there goto Ubuntu settings, bluetooth, and it should be there, click on it and it will appear in the terminal where you ran `bluetoothctl`.

@@ -1,0 +1,27 @@
+# ignore temp files
+*~
+*.bak
+*.orig
+
+# ignore vim temp files
+*.swp
+*.swo
+*.swn
+*.un~
+.netrwhist
+Session.vim
+
+# Runtime-python
+*.pyc
+*.pyo
+__pycache__/
+
+# ROS 2 colcon build artefacts (when built in place)
+build/
+install/
+log/
+
+.gitman
+.gitman.old
+
+html/
