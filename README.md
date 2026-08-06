@@ -80,10 +80,6 @@ published. The controller subscribes by default to:
 /optitrack_multiplexer_node/rigid_body/XFly2
 ```
 
-Set the `optitrack_topic` parameter if the rigid body is named
-differently. The controller requires a valid pose stream and stops
-commanding the aircraft after 0.5 s without one (`tracking_timeout`).
-
 ### 3. Communication bridge
 
 ```bash
