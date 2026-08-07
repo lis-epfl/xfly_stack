@@ -6,7 +6,11 @@ provides the communication link to the aircraft, the real-time
 controller, an offline trajectory generator, and the two racing
 trajectories used in the accompanying publication.
 
-[![XFly tracking the two racing trajectories](docs/tracking_demo.gif)](https://youtu.be/pVb3DoUntWI)
+[![Track 1](docs/track_1.jpg)](https://youtu.be/pVb3DoUntWI)
+
+[![Track 2](docs/track_2.jpg)](https://youtu.be/pVb3DoUntWI)
+
+Flight video: <https://youtu.be/pVb3DoUntWI>
 
 ## Repository structure
 
