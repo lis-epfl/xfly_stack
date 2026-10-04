@@ -139,14 +139,12 @@ rather than to the installed node; supply an absolute path when using
 If you use this software in your research, please cite:
 
 ```bibtex
-@article{toumieh2026mpcc,
-  title   = {Accurate Trajectory Tracking with Model Predictive
-             Contouring Control for Bird-Scale Flapping-Wing MAVs},
-  author  = {Toumieh, Charbel and Zeng, Jack and Mistry, Niel and
-             Floreano, Dario},
-  journal = {TODO},
-  year    = {TODO},
-  doi     = {TODO}
+@article{toumieh2026accurate,
+  title={Accurate Trajectory Tracking with Model Predictive Contouring Control for Bird-Scale Flapping-Wing MAVs},
+  author={Toumieh, Charbel and Zeng, Jack and Mistry, Niel and Floreano, Dario},
+  journal={IEEE Robotics and Automation Letters},
+  year={2026},
+  publisher={IEEE}
 }
 ```
 
